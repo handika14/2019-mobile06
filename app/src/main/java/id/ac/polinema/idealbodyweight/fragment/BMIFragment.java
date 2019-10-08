@@ -1,16 +1,19 @@
 package id.ac.polinema.idealbodyweight.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import id.ac.polinema.idealbodyweight.R;
+import id.ac.polinema.idealbodyweight.util.BMI;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,15 +34,41 @@ public class BMIFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_bmi, container, false);
+        //return inflater.inflate(R.layout.fragment_bmi, container, false);
+        View view = inflater.inflate(R.layout.fragment_bmi, container, false);
+        final EditText beratBadan = view.findViewById(R.id.mass);
+        final EditText tinggiBadan  = view.findViewById(R.id.height);
+
+        Button calculate = view.findViewById(R.id.calculate);
+        calculate.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (mListener != null) {
+                    String heightString = tinggiBadan.getText().toString();
+                    String beratString = beratBadan.getText().toString();
+
+                    if (!TextUtils.isEmpty(heightString) &&!TextUtils.isEmpty(beratString) ) {
+                        float height = Float.parseFloat(heightString);
+                        float mass = Float.parseFloat(beratString);
+                        BMI bmi = new BMI(mass, height);
+                        mListener.onCalculatedBMIClicked(bmi.BMIRange());
+
+                    } else {
+                        Toast.makeText(getActivity(), "Please select gender and input your height", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+            }
+
+        });
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -70,6 +99,6 @@ public class BMIFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onCalculatedBMIClicked(String result);
     }
 }
